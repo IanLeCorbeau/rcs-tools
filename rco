@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Ragnarok: rco,v 1.1 2025/09/23 19:34:25 lecorbeau Exp $
+# $Ragnarok: rco,v 1.2 2025/09/23 22:27:04 lecorbeau Exp $
 # rco: wrapper around co. Ensures -l and -wusername is included and verifies
 # sig if desired.
 
@@ -13,6 +13,7 @@ use File::Path qw(make_path);
 use Capture::Tiny 'capture_stdout';
 
 my $curdir	= Cwd::cwd();
+my $rcsdir	= "$curdir/RCS";
 my $conffile	= File::HomeDir->my_home . '/.rcs.conf';
 
 my $conf = Config::General->new(
@@ -51,9 +52,11 @@ sub verify_sig {
 		or die("Can't verify $file sig: $!\n");
 }
 
-if ($verify_sig == 1) {
-	verify_sig($file);
+foreach my $file (@ARGV) {
+	if ($verify_sig == 1) {
+		verify_sig($file);
+	}
+	
+	system('/usr/bin/co', "-w$username", '-l', "$file") == 0
+		or die("Can't run co with $file: $!\n");
 }
-
-system('/usr/bin/co', "-w$username", '-l', "$file") == 0
-	or die("Can't run co with $file: $!\n");
