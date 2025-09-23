@@ -1,3 +1,5 @@
+<!-- $Ragnarok: README.md,v 1.1 2025/09/23 22:20:30 lecorbeau Exp $ -->
+
 # rcs-tools
 
 Extra tools for rcs (Revision Control System).
@@ -26,8 +28,14 @@ before a checkout is performed when running `rco`.
 
 * `rci`: wrapper script around the `ci` command. Only takes file names
 as argument. As with the default `ci` command, will checkin one or more
-files. Afterwards, a log file and a diff between the latest and previous
-revisions will be created in `RCS/logs` and `RCS/diffs` respectively.
-Will also sign file if `SIGN = true` in `.rcs.conf`.
+files. It also passes the `-u` flag to ensure that a read-only copy of
+the file remains, as well as `-wUSERNAME`. After check in, a log file
+and a diff between the latest and previous revisions will be created in
+`RCS/logs` and `RCS/diffs` respectively. Will also sign file if
+`SIGN = true` in `.rcs.conf`.
 
-...to be continued...
+* `rco`: wrapper around `co`. Passes the `-l` file to lock the revision,
+as well as `-wUSERNAME`. If `VERIFY_SIG` is set to true, will verify the
+file's signature with signify before check out.
+
+
