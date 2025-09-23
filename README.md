@@ -1,10 +1,18 @@
-<!-- $Ragnarok: README.md,v 1.1 2025/09/23 22:20:30 lecorbeau Exp $ -->
+<!-- $Ragnarok: README.md,v 1.2 2025/09/23 22:34:50 lecorbeau Exp $ -->
 
 # rcs-tools
 
 Extra tools for rcs (Revision Control System).
 
 ## Usage
+
+In order to work, ensure that the following Perl modules are available
+on your system:
+
+* Config::General
+* File::Homedir
+* File::Path
+* Capture::Tiny
 
 ### .rcs.conf
 
