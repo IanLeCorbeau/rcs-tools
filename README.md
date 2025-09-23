@@ -1,4 +1,4 @@
-<!-- $Ragnarok: README.md,v 1.3 2025/09/23 22:45:50 lecorbeau Exp $ -->
+<!-- $Ragnarok: README.md,v 1.4 2025/09/23 23:23:26 lecorbeau Exp $ -->
 
 # rcs-tools
 
@@ -57,3 +57,39 @@ individual diffs.
 
 * `rcsweb` & `rcsget`: creates html pages out of files under rcs' control
 to host online, and fetch whole repos, dirs or single files, respectively.
+
+## Signing and verifying files/revisions
+
+Files can be automatically signed with signify upon checkin with `rci`,
+and their signature verified upon checkout with `rco`.
+
+### Set up for automatic signing
+
+Create a new key pair:
+
+    signify -G -p USERNAME.pub -s USERNAME.sec
+
+Replace `USERNAME` with the USERNAME defined in .rcs.conf. Then, place
+the `.sec` key in a directory of your choice (keep it safe).
+
+In `.rcs.conf`, set `SIGN = true` and add the full path to the sec key's
+directory's to `.rcs.conf`, eg: `SIG_KEY = /home/user/.sig`. *Do not add
+the name of the key, only the directory where the key resides*.
+
+That's it. Your `.pub` key can be shared and used to verify rcs files at
+check out time.
+
+**Caveat: you will need to enter your key's passphrase whenever a file
+is signed unless you passed the -n option when creating your new key
+pair. Not using a passphrase is not recommended, only do so if you
+understand the potential consequences.**
+
+### Set up for automatic sig verification
+
+Save a user's (or your own) `.sec` key somewhere appropriate, then in
+`.rcs.conf`:
+
+    VERIFY_SIG = true
+    PUBKEY_DIR = /path/to/pubkey-dir
+
+Simple as that.
