@@ -1,4 +1,4 @@
-<!-- $Ragnarok: README.md,v 1.2 2025/09/23 22:34:50 lecorbeau Exp $ -->
+<!-- $Ragnarok: README.md,v 1.3 2025/09/23 22:45:50 lecorbeau Exp $ -->
 
 # rcs-tools
 
@@ -46,4 +46,14 @@ and a diff between the latest and previous revisions will be created in
 as well as `-wUSERNAME`. If `VERIFY_SIG` is set to true, will verify the
 file's signature with signify before check out.
 
+The following commands are not yet implemented:
 
+* `rcl`: clean up the RCS/diffs directory. For example, `rcl -r1.2 -r1.50 file1`
+would concatenate all diffs from revision 1.2 up to, and including,
+revision 1.50 in a single file named `file1.hist.diff`, then delete the
+individual diffs.
+
+* `rcsgit`: push rcs revisions/commits to git mirror.
+
+* `rcsweb` & `rcsget`: creates html pages out of files under rcs' control
+to host online, and fetch whole repos, dirs or single files, respectively.
