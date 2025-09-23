@@ -1,4 +1,4 @@
-<!-- $Ragnarok: README.md,v 1.4 2025/09/23 23:23:26 lecorbeau Exp $ -->
+<!-- $Ragnarok: README.md,v 1.5 2025/09/23 23:27:17 lecorbeau Exp $ -->
 
 # rcs-tools
 
@@ -73,7 +73,7 @@ Replace `USERNAME` with the USERNAME defined in .rcs.conf. Then, place
 the `.sec` key in a directory of your choice (keep it safe).
 
 In `.rcs.conf`, set `SIGN = true` and add the full path to the sec key's
-directory's to `.rcs.conf`, eg: `SIG_KEY = /home/user/.sig`. *Do not add
+directory to `.rcs.conf`, eg: `SIG_KEY = /home/user/.sig`. *Do not add
 the name of the key, only the directory where the key resides*.
 
 That's it. Your `.pub` key can be shared and used to verify rcs files at
@@ -86,7 +86,7 @@ understand the potential consequences.**
 
 ### Set up for automatic sig verification
 
-Save a user's (or your own) `.sec` key somewhere appropriate, then in
+Save a user's (or your own) `.pub` key somewhere appropriate, then in
 `.rcs.conf`:
 
     VERIFY_SIG = true
