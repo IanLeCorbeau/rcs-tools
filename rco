@@ -1,0 +1,59 @@
+#!/usr/bin/env perl
+
+# $Ragnarok: rco,v 1.1 2025/09/23 19:34:25 lecorbeau Exp $
+# rco: wrapper around co. Ensures -l and -wusername is included and verifies
+# sig if desired.
+
+use strict;
+use warnings;
+use Cwd qw();
+use Config::General;
+use File::HomeDir;
+use File::Path qw(make_path);
+use Capture::Tiny 'capture_stdout';
+
+my $curdir	= Cwd::cwd();
+my $conffile	= File::HomeDir->my_home . '/.rcs.conf';
+
+my $conf = Config::General->new(
+	-ConfigFile		=> $conffile,
+	-SplitPolicy		=> 'custom',
+	-SplitDelimiter		=> '\s+=\s+',
+	-InterPolateVars	=> 1,
+	-AutoTrue		=> 1
+);
+
+my %config	= $conf->getall;
+my $username	= $config{'USERNAME'};
+my $verify_sig	= $config{'VERIFY_SIG'};
+
+sub verify_sig {
+	my ($file)	= @_;
+	my $sigdir	= "$curdir/RCS/sig";
+	my $pubkey	= $config{'PUBKEY_DIR'};
+	my $v		= "$rcsdir/$file,v";
+	my $author;
+
+	# Get user name from file
+	open(my $fh, '>', $file) or die("Can't open $file: $!\n");
+	while(my $line = <$fh>) {
+		chomp $line;
+		if ($line =~ /author/) {
+			my @fields = split(/\s+/, $line);
+			if (@fields > 1) {
+				$author = $fields[1];
+			}
+		}
+	}
+	close($fh) or die("Can't close $file: $!\n");
+
+	system('/usr/bin/signify', '-V', '-p', "$pubkey/$author.pub", '-m', "$file", '-x', "$sigdir/$file.sig") == 0
+		or die("Can't verify $file sig: $!\n");
+}
+
+if ($verify_sig == 1) {
+	verify_sig($file);
+}
+
+system('/usr/bin/co', "-w$username", '-l', "$file") == 0
+	or die("Can't run co with $file: $!\n");

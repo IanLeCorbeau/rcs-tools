@@ -1,0 +1,119 @@
+#!/usr/bin/env perl
+
+# $Ragnarok: rci,v 1.2 2025/09/23 17:26:48 lecorbeau Exp $
+# rci: wrapper around 'ci'. Check in file, create a log and diff.
+
+use strict;
+use warnings;
+use Cwd qw();
+use Config::General;
+use File::HomeDir;
+use File::Path qw(make_path);
+use Capture::Tiny 'capture_stdout';
+
+my $curdir	= Cwd::cwd();
+my $rcsdir	= "$curdir/RCS";
+my $logdir	= "$rcsdir/logs";
+my $diffdir	= "$rcsdir/diffs";
+my $conffile	= File::HomeDir->my_home . '/.rcs.conf';
+
+my $conf = Config::General->new(
+	-ConfigFile		=> $conffile,
+	-SplitPolicy		=> 'custom',
+	-SplitDelimiter		=> '\s+=\s+',
+	-InterPolateVars	=> 1,
+	-AutoTrue		=> 1
+);
+
+my %config	= $conf->getall;
+my $username	= $config{'USERNAME'};
+my $sign	= $config{'SIGN'};
+
+# Create log file.
+sub do_log {
+	my ($file) = @_;
+	my $logfile	= "$logdir/$file.log";
+	my $log;
+
+	open($log, '>', "$logfile") or die("Open Log Failed: $!\n");
+	print($log capture_stdout {
+			system('/usr/bin/rlog', "$file");
+			return;
+		}
+	);
+	close($log) or die("Close Log Failed: $!\n");
+
+	# Remove first empty line in log.
+	open($log, '<', $logfile) or die("Open Log Failed: $!\n");
+	my @lines = <$log>;
+	close($log) or die("Close Log Failed\n");
+
+	if (@lines && $lines[0] =~ /^\s*$/) {
+		shift @lines;
+	}
+
+	open($log, '>', "$logfile") or die("open Log Failed: $!\n");
+	print($log @lines);
+	close($log) or die("Close Log Failed: $!\n");
+}
+
+# Create a diff between new and previous revision.
+sub do_diff {
+	my ($file) = @_;
+
+	my $head;
+	my $prev;
+	my $v	= "$rcsdir/$file,v";
+
+	open(my $fh, '<', $v) or die("Can't open log file: $!\n");
+	
+	while(my $line = <$fh>) {
+		chomp $line;
+		if (!$head && $line =~ /head\s+(\d+\.\d+)/) {
+			$head = $1;
+		}
+		if (!$prev && $line =~ /next\s+(\d+\.\d+)/) {
+			$prev = $1;
+			last;
+		}
+		last if $head && $prev;
+	}
+	close($fh) or die("Can't close file: $!\n");
+	
+	# Don't try to diff if this is revision 1.1
+	if ($head eq 1.1) {
+		return;
+	}
+
+	open(my $diff, '>', "$diffdir/$file-$head.diff") or die("Open Diff Failed: $!\n");
+	print($diff capture_stdout {
+			system('/usr/bin/rcsdiff', '-u', "-r$prev", "-r$head", "$file");
+			return;
+		}
+	);
+	close($diff) or die("Close Diff Failed: $!\n");
+}
+
+sub sign_file {
+	my ($file)	= @_;
+	my $sigdir	= "$rcsdir/sig";
+	my $key		= $config{'SIG_KEY'};
+
+	system('/usr/bin/signify', '-S', '-s', "$key", '-m', "$file", '-x', "$sigdir/$file.sig") == 0
+		or die("Can't sign $file: $!\n");
+}
+
+# Ensure dirs exists.
+make_path("$rcsdir");
+make_path("$logdir");
+make_path("$diffdir");
+
+foreach my $file (@ARGV) {
+	system("/usr/bin/ci", "-w$username", "-u", $file) == 0
+		or die("Can't run ci against $file\n");
+	do_log($file);
+	do_diff($file);
+	if ($sign == 1) {
+		sign_file($file);
+	}
+}
