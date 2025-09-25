@@ -1,4 +1,4 @@
-<!-- $Ragnarok: README.md,v 1.5 2025/09/23 23:27:17 lecorbeau Exp $ -->
+<!-- $Ragnarok: README.md,v 1.6 2025/09/25 15:28:22 lecorbeau Exp $ -->
 
 # rcs-tools
 
@@ -93,3 +93,8 @@ Save a user's (or your own) `.pub` key somewhere appropriate, then in
     PUBKEY_DIR = /path/to/pubkey-dir
 
 Simple as that.
+
+## TODO
+
+[] Create module to load config values instead of loading them in every
+single scripts.
