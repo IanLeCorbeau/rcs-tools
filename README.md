@@ -1,4 +1,4 @@
-<!-- $Ragnarok: README.md,v 1.6 2025/09/25 15:28:22 lecorbeau Exp $ -->
+<!-- $Ragnarok: README.md,v 1.7 2025/09/28 19:48:59 lecorbeau Exp $ -->
 
 # rcs-tools
 
@@ -45,6 +45,10 @@ and a diff between the latest and previous revisions will be created in
 * `rco`: wrapper around `co`. Passes the `-l` file to lock the revision,
 as well as `-wUSERNAME`. If `VERIFY_SIG` is set to true, will verify the
 file's signature with signify before check out.
+
+* `revert`: revert to specific revision. eg: `revert 1.3 file` would
+revert `file` to revision 1.3. `file` needs to be checked out first.
+**Note: file signing with signify is not yet implemented in this script**.
 
 The following commands are not yet implemented:
 
