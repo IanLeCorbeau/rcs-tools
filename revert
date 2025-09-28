@@ -1,0 +1,78 @@
+#!/usr/bin/env perl
+
+# $Ragnarok: revert,v 1.1 2025/09/28 19:44:33 lecorbeau Exp $
+# Revert to specific commit. Usage: revert -r<commit number> <filename>.
+
+use strict;
+use warnings;
+use Cwd qw();
+use Config::General;
+use File::HomeDir;
+use Capture::Tiny 'capture_stdout';
+
+#my ($num)	= @ARGV;
+#my ($maj, $min)= split /\./, $num;
+#my $new	= $min + 1;
+
+#my $file	= pop(@ARGV);
+#my @revisions	= map { substr($_, 2) } @ARGV;
+
+#foreach my $revision (@revisions) {
+#	print("$revision $file\n");
+#}
+
+my ($rev, $file)	= @ARGV;
+my $curdir		= Cwd::cwd();
+my $rcsdir		= "$curdir/RCS";
+my $v			= "$rcsdir/$file,v";
+my $conffile		= File::HomeDir->my_home . '/.rcs.conf';
+my $conf 		= Config::General->new(
+	-ConfigFile		=> $conffile,
+	-SplitPolicy		=> 'custom',
+	-SplitDelimiter		=> '\s+=\s+',
+	-InterPolateVars	=> 1,
+	-AutoTrue		=> 1
+);
+my %config		= $conf->getall;
+my $username		= $config{'USERNAME'};
+my $sign		= $config{'SIGN'};
+my $head;
+
+# Find head to determine the new rev min number.
+open(my $fh, '<', $v) or die("Can't open log file: $!\n");
+while(my $line = <$fh>) {
+	chomp $line;
+	if ($line =~ /head\s+(\d+\.\d+)/) {
+		$head = $1;
+		last;
+	}
+}
+close($fh) or die("Can't close file: $!\n");
+
+# Split $head
+my ($maj, $min)	= split /\./, $head;
+my $new		= $min + 1;
+my $msg		= "Reverted $file to revision $rev state";
+
+# Generate diff between revisions, ignoring keywords
+sub do_diff {
+	my ($file)	= @_;
+
+	open(my $diff, '>', "$file.diff") or die("Open diff failed\n");
+	print($diff capture_stdout {
+		system('/usr/bin/rcsdiff', '-kk', '-u', "-r$head", "-r$rev", "$file");
+		return;
+	});
+	close($diff) or die("Can't close $diff: $!\n");
+}
+do_diff($file);
+
+# Patch working file
+system("/usr/bin/patch < $file.diff") == 0
+	or die("Can't patch $file: $!\n");
+
+# Now, check in reverted rev
+system("/usr/bin/ci", "-w$username", "-u$maj.$new", "-m$msg", "$file") == 0
+	or die("Can't run ci against $file\n");
+
+unlink("$file.diff") or die("Can't delete $file.diff: $!\n");
