@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Ragnarok: revert,v 1.1 2025/09/28 19:44:33 lecorbeau Exp $
+# $Ragnarok: revert,v 1.2 2025/10/07 18:07:02 lecorbeau Exp $
 # Revert to specific commit. Usage: revert -r<commit number> <filename>.
 
 use strict;
@@ -9,17 +9,6 @@ use Cwd qw();
 use Config::General;
 use File::HomeDir;
 use Capture::Tiny 'capture_stdout';
-
-#my ($num)	= @ARGV;
-#my ($maj, $min)= split /\./, $num;
-#my $new	= $min + 1;
-
-#my $file	= pop(@ARGV);
-#my @revisions	= map { substr($_, 2) } @ARGV;
-
-#foreach my $revision (@revisions) {
-#	print("$revision $file\n");
-#}
 
 my ($rev, $file)	= @ARGV;
 my $curdir		= Cwd::cwd();
