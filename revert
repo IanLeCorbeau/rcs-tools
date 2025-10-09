@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Ragnarok: revert,v 1.2 2025/10/07 18:07:02 lecorbeau Exp $
+# $Ragnarok: revert,v 1.3 2025/10/09 14:05:21 lecorbeau Exp $
 # Revert to specific commit. Usage: revert -r<commit number> <filename>.
 
 use strict;
@@ -9,6 +9,8 @@ use Cwd qw();
 use Config::General;
 use File::HomeDir;
 use Capture::Tiny 'capture_stdout';
+use EOD::Diff qw(do_diff);
+use EOD::Sig qw(sign_file);
 
 my ($rev, $file)	= @ARGV;
 my $curdir		= Cwd::cwd();
@@ -64,4 +66,11 @@ system("/usr/bin/patch < $file.diff") == 0
 system("/usr/bin/ci", "-w$username", "-u$maj.$new", "-m$msg", "$file") == 0
 	or die("Can't run ci against $file\n");
 
+# Remove temp diff
 unlink("$file.diff") or die("Can't delete $file.diff: $!\n");
+
+# Now create a proper diff file.
+do_diff($file);
+
+# Sign the file if verify_sig is true
+sign_file($file);
