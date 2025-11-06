@@ -1,8 +1,9 @@
 <!-- $Ragnarok: README.md,v 1.7 2025/09/28 19:48:59 lecorbeau Exp $ -->
 
-# rcs-tools
+# EOD
 
-Extra tools for rcs (Revision Control System).
+The Eye of Dyeus, small CVS-like version control system, wrapped around rcs (Revision Control System).
+Why? Because I want to.
 
 ## Usage
 
