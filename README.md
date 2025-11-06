@@ -2,6 +2,8 @@
 
 # EOD
 
+**WORK IN PROGRESS** Not ready for production yet.
+
 The Eye of Dyeus, small CVS-like version control system, wrapped around rcs (Revision Control System).
 Why? Because I want to.
 
@@ -15,7 +17,7 @@ on your system:
 * File::Path
 * Capture::Tiny
 
-### .rcs.conf
+### .eodrc
 
 These tools parse options from a config file that should be located in
 `$HOME`. The options are as follow:
@@ -32,6 +34,9 @@ the `Signing` section below.
 before a checkout is performed when running `rco`.
 
 * `PUBKEY_DIR`: path to the directory containing signify `*.pub` keys.
+
+* `COMPRESS`: use compression of `*,v` files using the RFC 1950 standard.
+*Not yet implemented*.
 
 ### Commands
 
