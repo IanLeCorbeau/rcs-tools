@@ -35,7 +35,7 @@ before a checkout is performed when running `rco`.
 
 * `PUBKEY_DIR`: path to the directory containing signify `*.pub` keys.
 
-* `COMPRESS`: use compression of `*,v` files using the RFC 1950 standard.
+* `COMPRESS`: compress `*,v` files using the RFC 1950 standard.
 *Not yet implemented*.
 
 ### Commands
