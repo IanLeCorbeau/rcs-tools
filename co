@@ -1,8 +1,6 @@
 #!/usr/bin/env perl
 
-# $Ragnarok: rco,v 1.4 2025/09/25 22:25:01 lecorbeau Exp $
-# rco: wrapper around co. Ensures -l and -wusername is included and verifies
-# sig if desired.
+# $Ragnarok$
 
 use strict;
 use warnings;

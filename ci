@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-# $Ragnarok: rci,v 1.5 2025/09/25 22:25:12 lecorbeau Exp $
-# rci: wrapper around 'ci'. Check in file, create a log and diff.
+# $Ragnarok$
 
 use strict;
 use warnings;
