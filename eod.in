@@ -1,0 +1,9 @@
+#!/usr/bin/env perl
+
+# $Ragnarok$
+
+use strict;
+use warnings;
+
+# Path to executables. See config.mk
+my $prefix	= '@PREFIX@';
